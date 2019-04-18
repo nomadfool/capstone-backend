@@ -12,8 +12,8 @@ class UserProfile(models.Model):
 
 
 class Connection(models.Model):
-	player = models.ForeignKey(UserProfile, related_name = "main_player",on_delete=models.CASCADE,default = 1)
-	friend = models.ForeignKey(UserProfile, related_name = "player_friend",on_delete=models.CASCADE,default = 1)
+	player = models.ForeignKey(User, related_name = "main_player",on_delete=models.CASCADE,default = 1)
+	friend = models.ForeignKey(User, related_name = "player_friend",on_delete=models.CASCADE,default = 1)
 	status = models.BooleanField(default=True)
 
 class Game(models.Model):

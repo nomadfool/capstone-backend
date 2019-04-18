@@ -20,7 +20,9 @@ from gameapp.views import (UserCreateAPIView,
 						   PlayerCreateAPIView,
 						   PlayerDeleteAPIView,
 						   ActivatePlayerAPIView,
-
+						   UserConnectionView,
+						   CtrlFriendAPIView,
+						   CtrlBlackAPIView,
 						   )
 
 urlpatterns = [
@@ -44,4 +46,8 @@ urlpatterns = [
     path('player/add/', PlayerCreateAPIView.as_view(), name='player_add'),
     path('player/activate/<int:player_id>', ActivatePlayerAPIView.as_view(), name='player_active'),
     path('player/delete/<int:player_id>', PlayerDeleteAPIView.as_view(), name='player_delete'), 
+    path('friend/', CtrlFriendAPIView.as_view(), name='player_friend'), 
+    path('black/', CtrlBlackAPIView.as_view(), name='player_black'), 
+    path('connection/user/', UserConnectionView.as_view(), name='connectionuser_list'),
+
 ]

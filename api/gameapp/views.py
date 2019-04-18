@@ -8,12 +8,14 @@ from .serializers import (UserCreateSerializer,
                           TableUpdateSerializer,
                           PlayerSerializer,
                           ActivatePlayerSerializer,
-                          CloseTableSerializer,)
+                          CloseTableSerializer,
+                          ConnectionSerializer,
+                          UserSerializer)
 
 from rest_framework.filters import SearchFilter,OrderingFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
-from gameapp.models import UserProfile,Game,Table,Player
+from gameapp.models import UserProfile,Game,Table,Player,Connection
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +24,7 @@ import json
 from django.core import serializers
 from django.http import Http404
 from rest_framework import status
+from django.db.models import Q
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -32,10 +35,11 @@ class UpdateProfile(APIView):
 
     def put(self, request):
         try:
-            get_query = User.objects.get(id = request.user.id)
+            get_query = User.objects.get(id = request.user.id) 
             serializer = UserUpdateSerializer(get_query, data=request.data)
         except User.DoesNotExist:
-            return  Response()  
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         if serializer.is_valid():
             serializer.save() 
             return Response(serializer.data)
@@ -129,10 +133,110 @@ class PlayerDeleteAPIView(DestroyAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'player_id'
 
-
 class ActivatePlayerAPIView(RetrieveUpdateAPIView):
     queryset = Player.objects.all()
     serializer_class = ActivatePlayerSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'player_id'
+
+
+class UserConnectionView(APIView):
+
+    def get(self,request):
+        get_query =  User.objects.filter(~Q(id = request.user.id))
+        serializer = UserSerializer(get_query, many=True,)
+        return Response(serializer.data)
+
+
+class CtrlFriendAPIView(APIView):
+
+    def get(self,request):
+        try:
+            if (request.data.get('p_id')):
+                get_query = Connection.objects.get(id=p_id)
+            else:
+                get_query = Connection.objects.filter(player = request.user,status=True)
+
+            serializer = ConnectionSerializer(get_query, many=True,)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data)
+
+    
+    def post(self,request,*args, **kwargs):
+        if(request.data.get('p_id')):
+            try:
+                user = User.objects.get(pk = p_id)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            try:
+                friend= Connection.objects.get(player = request.user,
+                friend = user)
+                friend.status = True
+                friend.save()
+            except:
+                if Connection.DoesNotExist:
+                    try:
+                        friend = Connection.objects.create(player = request.user,
+                        friend = user,status = True)
+                    except:
+                        return Response(status.HTTP_304_NOT_MODIFIED) 
+                else:
+                    return Response(status=status.HTTP_304_NOT_FOUND)
+
+            serializer = ConnectionSerializer(friend, many=False)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def delete(self,request,*args, **kwargs):
+        if(request.data.get('p_id')):
+            try:
+                get_query = Connection.objects.filter(id = p_id)
+                get_query.delete()
+            except Connection.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CtrlBlackAPIView(APIView):
+
+    def get(self,request):
+        try:
+            if(request.data.get('p_id')):
+                get_query = Connection.objects.filter(player = request.user,status=False)
+            else:
+                get_query = Connection.objects.filter(pk=p_id, player = request.user,status=False)
+
+            serializer = ConnectionSerializer(get_query, many=True,)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data)
+
+    
+    def post(self,request,*args, **kwargs):
+        if(request.data.get('p_id')):
+            try:
+                user = User.objects.get(pk = p_id)
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            try:
+                friend= Connection.objects.get(player = request.user,
+                friend = user)
+                friend.status = False
+                friend.save()
+            except:
+                if Connection.DoesNotExist:
+                    try:
+                        friend = Connection.objects.create(player = request.user,
+                        friend = user,status = False)
+                    except:
+                        return Response(status.HTTP_304_NOT_MODIFIED) 
+                else:
+                    return Response(status=status.HTTP_304_NOT_FOUND)
+
+            serializer = ConnectionSerializer(friend, many=False)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+
 

@@ -1,14 +1,20 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile,Game,Table,Player
+from .models import UserProfile,Game,Table,Player,Connection
 
 
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['age','gender','area']
 
 class UserSerializer(serializers.ModelSerializer):
+    userprofile =  UserProfileSerializer()
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email']
-
+        fields = ['id','username','first_name','last_name','email','userprofile']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -27,13 +33,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         new_user.save()
         return validated_data
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        exclude = ('user',)
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    userprofile = UserProfileSerializer(required=False)
+    userprofile = UserProfileSerializer()
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name','userprofile')
@@ -52,6 +54,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.userprofile.area = profile_data.get('area', instance.userprofile.area)
 
         instance.save()
+        return instance
 
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,5 +89,20 @@ class ActivatePlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['status',]
+
+class ConnectionSerializer(serializers.ModelSerializer):
+    player = UserSerializer()
+    friend = UserSerializer()
+    class Meta:
+        model = Connection
+        fields = ['id','player','friend','status']
+
+
+
+
+
+
+
+
 
 
