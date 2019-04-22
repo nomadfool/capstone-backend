@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'gameapp',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +102,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=12),
+ }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -112,6 +131,18 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Email sitting
+
+EMAIL_HOST           = 'smtp.gmail.com'
+EMAIL_PORT           = 587
+EMAIL_HOST_USER      = 'nabil.ali.fares@gmail.com'
+EMAIL_HOST_PASSWORD  = 'Mail@739318117'
+EMAIL_USE_TLS        = True
+DEFAULT_FROM_EMAIL   = EMAIL_HOST_USER
+EMAIL_FROM           = EMAIL_HOST_USER
+EMAIL_SUBJECT_PREFIX = '[Project] '
+EMAIL_BACKEND        = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Static files (CSS, JavaScript, Images)
