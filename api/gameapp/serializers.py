@@ -12,9 +12,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     userprofile =  UserProfileSerializer()
+    userRelation = serializers.CharField()
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email','userprofile']
+        fields = ['id','username','first_name','last_name','email','userRelation','userprofile']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -84,6 +85,20 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = '__all__'
+
+class PlayerCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = '__all__'
+
+        def create(self, validated_data):
+            # table = validated_data['table']
+            # player = validated_data['player']
+            # play_as = validated_data['play_as']
+            # status = validated_data['status']
+            # new_player = Player.objects.create(table=table,player=player,play_as=play_as,status=status)
+            # return new_player
+            return Player.objects.create(**validated_data)
 
 class ActivatePlayerSerializer(serializers.ModelSerializer):
     class Meta:

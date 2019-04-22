@@ -3,12 +3,21 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
+from django.conf import settings
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE,default = 1)
 	age =  models.IntegerField(blank=True, null=True)
 	gender = models.CharField(max_length=1,blank=True, null=True)
 	area = models.CharField(max_length=100,blank=True, null=True)
+
+	def retaed_as(self):
+		retaed_to_my = self.user.player_friend_set.all()
+		if (retaed_to_my.status):
+			return('Friend')
+		return('Black Listed')
+
+
 
 
 class Connection(models.Model):
@@ -42,6 +51,9 @@ class Player(models.Model):
 	play_as =  models.CharField(max_length=50,default = 'Player')
 	status = models.BooleanField(default=False)
 
+	# class Meta:
+	# 	unique_together = (("table", "player"),)
+
 
 @receiver(post_save, sender=User)
 def create_profile(sender,instance,**kwargs):
@@ -61,17 +73,18 @@ def notifyHost(sender,instance,**kwargs):
 		except Player.DoesNotExist:
 			return
 		if(hoster.player != instance.player):
+
 			send_mail('New Player',
-					  instance.player.first_name +' '+instance.player.last_name + 'like to join the '+ instance.table.game.name,
-					  'Notification@gamemember.com',
+					  instance.player.first_name +' '+instance.player.last_name + ' like to join the '+ instance.table.game.name,
+					  'nabil.ali.fares@gmail.com',
 					  [instance.player.email],
-					  fail_silently=False,)
+					  fail_silently=True,)
 	elif (instance.status):
 		send_mail('Activated',
 					instance.player.first_name +' '+instance.player.last_name + 'you are welcome  join the '+ instance.table.game.name,
-					'Notification@gamemember.com',
+					'nabil.ali.fares@gmail.com',
 					[instance.player.email],
-					fail_silently=False,)
+					fail_silently=True,)
 
 
 

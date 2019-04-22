@@ -7,6 +7,7 @@ from .serializers import (UserCreateSerializer,
                           TableSerializer,
                           TableUpdateSerializer,
                           PlayerSerializer,
+                          PlayerCreateSerializer,
                           ActivatePlayerSerializer,
                           CloseTableSerializer,
                           ConnectionSerializer,
@@ -121,11 +122,26 @@ class PlayerDetailsAPIView(RetrieveAPIView):
     lookup_field = 'id'
     lookup_url_kwarg = 'player_id'
 
-class PlayerCreateAPIView(CreateAPIView):
-    serializer_class = PlayerSerializer
+class PlayerCreateAPIView(APIView):
 
-    def perform_create(self, serializer):
-        serializer.save(player=self.request.user)
+    def checkexisting(self,request,table):
+        try:
+            player = self.request.user
+            joined_before = Player.objects.get(table = table,player = player)
+            return False
+        except Player.DoesNotExist:
+            return True
+
+    def post(self,request,*args, **kwargs):
+        if self.checkexisting(request,table=request.data.get('table')):
+            serializer = PlayerCreateSerializer(data=request.data)
+            if serializer.is_valid():  
+                serializer.save(player = self.request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_302_FOUND)
+   
 
 class PlayerDeleteAPIView(DestroyAPIView):
     queryset = Player.objects.all()
@@ -140,13 +156,21 @@ class ActivatePlayerAPIView(RetrieveUpdateAPIView):
     lookup_url_kwarg = 'player_id'
 
 
+# class UserConnectionView(APIView):
+
+#     def get(self,request):
+#         get_query =  User.objects.filter(~Q(id = request.user.id))
+#         serializer = UserSerializer(get_query, many=True,)
+#         return Response(serializer.data)
+
+
+
 class UserConnectionView(APIView):
 
     def get(self,request):
         get_query =  User.objects.filter(~Q(id = request.user.id))
         serializer = UserSerializer(get_query, many=True,)
         return Response(serializer.data)
-
 
 class CtrlFriendAPIView(APIView):
 

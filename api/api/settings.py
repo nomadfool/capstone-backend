@@ -132,7 +132,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Email sitting
 
+EMAIL_HOST           = 'smtp.gmail.com'
+EMAIL_PORT           = 587
+EMAIL_HOST_USER      = 'nabil.ali.fares@gmail.com'
+EMAIL_HOST_PASSWORD  = 'Mail@739318117'
+EMAIL_USE_TLS        = True
+DEFAULT_FROM_EMAIL   = EMAIL_HOST_USER
+EMAIL_FROM           = EMAIL_HOST_USER
+EMAIL_SUBJECT_PREFIX = '[Project] '
+EMAIL_BACKEND        = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Static files (CSS, JavaScript, Images)
