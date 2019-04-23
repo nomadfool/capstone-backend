@@ -9,15 +9,8 @@ class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE,default = 1)
 	age =  models.IntegerField(blank=True, null=True)
 	gender = models.CharField(max_length=1,blank=True, null=True)
+	image = models.ImageField(null=True, blank=True)
 	area = models.CharField(max_length=100,blank=True, null=True)
-
-	def retaed_as(self):
-		retaed_to_my = self.user.player_friend_set.all()
-		if (retaed_to_my.status):
-			return('Friend')
-		return('Black Listed')
-
-
 
 
 class Connection(models.Model):
@@ -28,11 +21,14 @@ class Connection(models.Model):
 class Game(models.Model):
 	name = models.CharField(max_length=100)
 	description = models.TextField()
+	image = models.ImageField(null=True, blank=True)
 	min_player = models.IntegerField(default=2)
 	max_player = models.IntegerField(default=2)
 	play_time = models.DecimalField(max_digits=5, decimal_places=2)
 
 class Table(models.Model):
+	name = models.CharField(max_length=100,blank=True, null=True)
+	description = models.TextField(blank=True, null=True)
 	host = models.ForeignKey(User, on_delete=models.CASCADE,default = 1)
 	game = models.ForeignKey(Game, on_delete=models.CASCADE,default = 1)
 	player_number = models.IntegerField(default=1)
@@ -63,7 +59,7 @@ def create_profile(sender,instance,**kwargs):
 @receiver(post_save, sender=Table)
 def createHost(sender,instance,**kwargs):
 	if kwargs.get('created', False):
-		Player.objects.create(table=instance,player =instance.host,play_as = 'Host',status = 1)
+		Player.objects.create(table=instance, player =instance.host,play_as = 'Host',status = 1)
 
 @receiver(post_save, sender=Player)
 def notifyHost(sender,instance,**kwargs):
