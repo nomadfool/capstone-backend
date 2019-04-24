@@ -34,6 +34,11 @@ class UserCreateAPIView(CreateAPIView):
 
 class UpdateProfile(APIView):
 
+    def get(self,request):
+        get_query =  User.objects.get(id = request.user.id)
+        serializer = UserUpdateSerializer(get_query, many=False,)
+        return Response(serializer.data)
+
     def put(self, request):
         try:
             get_query = User.objects.get(id = request.user.id) 
@@ -45,6 +50,8 @@ class UpdateProfile(APIView):
             serializer.save() 
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class GameListView(ListAPIView):
     queryset = Game.objects.all()

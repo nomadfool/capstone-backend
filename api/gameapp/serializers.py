@@ -8,14 +8,13 @@ from .models import UserProfile,Game,Table,Player,Connection
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['age','gender','area']
+        fields = ['age','gender','image','area']
 
 class UserSerializer(serializers.ModelSerializer):
     userprofile =  UserProfileSerializer()
-    userRelation = serializers.CharField()
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email','userRelation','userprofile']
+        fields = ['id','username','first_name','last_name','email','userprofile']
 
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -52,6 +51,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         # Update UserProfile data
         instance.userprofile.age = profile_data.get('age', instance.userprofile.age)
         instance.userprofile.gender = profile_data.get('gender', instance.userprofile.gender)
+        instance.userprofile.image = profile_data.get('image', instance.userprofile.image)
         instance.userprofile.area = profile_data.get('area', instance.userprofile.area)
 
         instance.save()
@@ -67,12 +67,12 @@ class TableSerializer(serializers.ModelSerializer):
     game = GameSerializer()
     class Meta:
         model = Table
-        fields =  fields = ['id','host','game','player_number','game_date','start_time','game_status' ,'game_location','activePlayers']
+        fields =  fields = ['id','name','descrioption','host','game','player_number','game_date','start_time','game_status' ,'game_location','activePlayers']
 
 class TableUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ['game','player_number','game_date','start_time','game_location']
+        fields = ['name','description','game','player_number','game_date','start_time','game_location']
 
 class CloseTableSerializer(serializers.ModelSerializer):
     class Meta:
