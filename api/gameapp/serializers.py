@@ -42,18 +42,26 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('userprofile')
-
+        print(validated_data)
         # Update User data
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
         
         # Update UserProfile data
-        instance.userprofile.age = profile_data.get('age', instance.userprofile.age)
-        instance.userprofile.gender = profile_data.get('gender', instance.userprofile.gender)
-        instance.userprofile.image = profile_data.get('image', instance.userprofile.image)
-        instance.userprofile.area = profile_data.get('area', instance.userprofile.area)
+        
+        profile =instance.userprofile
+        profile.age = profile_data.get('age', instance.userprofile.gender)
+        profile.gender = profile_data.get('gender', instance.userprofile.gender)
+        profile.area = profile_data.get('area', instance.userprofile.area)
+        profile.image = profile_data.get('image', instance.userprofile.image)
 
+        profile.save()
+        # instance.userprofile.age = profile_data['age']
+        # instance.userprofile.gender = profile_data.get('gender', instance.userprofile.gender)
+        # # instance.userprofile.image = profile_data.get('image', instance.userprofile.image)
+        # instance.userprofile.area = profile_data.get('area', instance.userprofile.area)
+        # instance.userprofile.save()
         instance.save()
         return instance
 
