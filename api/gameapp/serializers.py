@@ -75,7 +75,7 @@ class TableSerializer(serializers.ModelSerializer):
     game = GameSerializer()
     class Meta:
         model = Table
-        fields =  fields = ['id','name','descrioption','host','game','player_number','game_date','start_time','game_status' ,'game_location','activePlayers']
+        fields =  fields = ['id','name','description','host','game','player_number','game_date','start_time','game_status' ,'game_location','activePlayers']
 
 class TableUpdateSerializer(serializers.ModelSerializer):
     class Meta:

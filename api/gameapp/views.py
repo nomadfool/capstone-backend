@@ -68,6 +68,9 @@ class GameDetailsAPIView(RetrieveAPIView):
 class GameCreateAPIView(CreateAPIView):
     serializer_class = GameSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(host=self.request.user)
+
 class GameUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
@@ -93,7 +96,7 @@ class TableDetailsAPIView(RetrieveAPIView):
     lookup_url_kwarg = 'table_id'
 
 class TableCreateAPIView(CreateAPIView):
-    serializer_class = TableSerializer
+    serializer_class = TableUpdateSerializer
 
     def perform_create(self, serializer):
         serializer.save(host=self.request.user)
@@ -105,7 +108,7 @@ class TableUpdateAPIView(RetrieveUpdateAPIView):
     lookup_url_kwarg = 'table_id'
 
 class TableDeleteAPIView(DestroyAPIView):
-    queryset = Game.objects.all()
+    queryset = Table.objects.all()
     serializer_class = TableSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'table_id'

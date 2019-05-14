@@ -30,12 +30,12 @@ class Table(models.Model):
 	name = models.CharField(max_length=100,blank=True, null=True)
 	description = models.TextField(blank=True, null=True)
 	host = models.ForeignKey(User, on_delete=models.CASCADE,default = 1)
-	game = models.ForeignKey(Game, on_delete=models.CASCADE,default = 1)
+	game = models.ForeignKey(Game, on_delete=models.PROTECT,default = 1)
 	player_number = models.IntegerField(default=1)
 	game_date  = models.DateField()
 	start_time = models.TimeField()
 	game_status = models.BooleanField(default=True)
-	game_location = models.CharField(max_length=100)
+	game_location = models.CharField(max_length=100, blank=True, null=True)
 
 	def activePlayers(self):
 		 playerCount = self.player_set.filter(status = True).count()
